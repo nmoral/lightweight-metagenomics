@@ -13,6 +13,10 @@ char Nucleotide::to_char() const {
     return n_;
 }
 
+int Nucleotide::uint8_t() const {
+    return encode(n_);
+}
+
 
 u_int8_t Nucleotide::encode(const char& nucleotide) const {
     switch (nucleotide)

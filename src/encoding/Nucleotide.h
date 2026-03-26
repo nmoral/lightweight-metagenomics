@@ -10,7 +10,7 @@ class Nucleotide {
 
         u_int8_t encode(const char& nucleotide) const;
 
-        u_int8_t to_uint8() const;
+        operator uint8_t() const;
 
         char to_char() const;
 
