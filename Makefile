@@ -7,13 +7,13 @@ COMMON_SRCS = $(filter-out src/mains/%, $(wildcard src/**/*.cpp))
 COMMON_OBJS = $(patsubst src/%.cpp, output/%.o, $(COMMON_SRCS))
 
 # Sources de tests
-TEST_SRCS = $(wildcard tests/*.cpp)
+TEST_SRCS = $(wildcard tests/**/*.cpp)
 TEST_OBJS = $(patsubst tests/%.cpp, output/tests/%.o, $(TEST_SRCS))
 
 # Dossiers de sortie necessaires
 OUTDIRS = $(sort $(dir $(COMMON_OBJS))) \
           output/mains \
-          output/tests
+          $(sort $(dir $(TEST_OBJS)))
 
 .PHONY: all clean index bits benchmark tests run_tests
 
