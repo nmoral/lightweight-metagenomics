@@ -29,3 +29,8 @@ Classes = briques (encoding, index, distance, classification, pipeline)
 Mains   = assemblage procédural des briques  
 &nbsp;&nbsp;&nbsp;&nbsp;orchestre sans savoir comment les briques fonctionnent en interne  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ même philosophie que les contrôleurs Symfony
+
+
+## 26 mars 2026
+
+Premier test unitaire vert, premier bout de code ! 

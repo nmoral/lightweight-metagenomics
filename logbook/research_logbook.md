@@ -36,3 +36,5 @@ We need to verify that no silent bit-level modifications are taking place.
 ### Results
 ### Open questions
 ### Observation
+
+Object implementation is not a ram problem in bioinformatics. But manipulating a list of object is less compact than an u_int64_t. So When we're implementing K-mer, we need to represent K-mer as an u_int64 and transform bit at position N and N+1 into Nucleotide object. 
