@@ -438,7 +438,69 @@ Possible chapters:
 
 ---
 
-## 9. Long-term vision — BioBase
+## 9. Structured logging as scientific instrumentation
+
+### Core idea
+
+Exceptions and anomalies are not just errors to handle — they are scientific
+events to capitalise on. A field case that "breaks the paradigms" is a potential
+discovery. Without structured logging it disappears silently. With it, it becomes
+a data point that travels from the field to the research team.
+
+### The distinction
+
+```
+EncodingException     → technical error, fix and continue
+UnknownOrganismEvent  → scientific event, log and capitalise
+LowConfidenceEvent    → weak signal, aggregate for analysis
+AnomalyEvent          → potentially important, flag for review
+```
+
+### Today — simple structured text logs
+
+No automation, no AI, no magic. Just a well-structured text file
+that travels with the sync:
+
+```
+[2031-03-14 14:32:11] [ANOMALY] confidence=0.04 family=UNKNOWN
+sequence=ATCG...TTGA version=index-v2.1.3 location=Mali-Bamako
+```
+
+Readable by a human, parseable by a 10-line Python script,
+versioned with the index version that produced it.
+
+### The value of versioning with the index
+
+Each log is tagged with the index version that produced it.
+If index v1.2 had a bias and v2.0 corrects it — logs from v1.2
+can be reanalysed retrospectively with the new index.
+Nothing is lost. Every field case is reinterpretable.
+
+### The natural evolution
+
+```
+Now             → structured text logs, manual review
+In 2 years      → automatic qualification script
+In 5 years      → integration into index update pipeline
+In 10 years     → distributed epidemiological surveillance system
+```
+
+Each step builds on the previous one.
+Everything starts with a well-formatted text file today.
+
+### Why this matters for T2
+
+A tool that silently crashes in Mali is potentially a missed diagnosis.
+A tool that logs "unknown sequence received, read skipped, analysis continues"
+is a field tool. A tool that logs anomalies with full context and ships them
+back at the next sync is a scientific instrument.
+
+The error infrastructure is part of the scientific contribution,
+not an afterthought.
+
+---
+
+## 10. Long-term vision — BioBase
 
 The T2 hierarchical index is one building block toward something larger:
 a native biological database.

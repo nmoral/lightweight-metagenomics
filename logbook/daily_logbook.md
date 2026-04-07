@@ -34,3 +34,8 @@ Mains   = assemblage procédural des briques
 ## 26 mars 2026
 
 Premier test unitaire vert, premier bout de code ! 
+
+## 27 mars 2026 
+
+Et si mon état de santé n'était pas du a un cerveau en mode actif en permanence ? un cerveau jamais passif ou pas assez ? 
+Le vélo devait me permettre de retrouver un mode off supplémentaire.

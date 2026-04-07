@@ -32,8 +32,19 @@ Given a DNA sequence (string), extract all k-mers of length k
 so each nucleotide must be encoded from char to two bits. Not only because it's a standart but because it's easier to apply mathematical solution on int. 
 We need to verify that no silent bit-level modifications are taking place. 
 
-### Implementation
+### Decision
+
+- Stored as char internally, encoded on demand → minimise storage
+- explicit constructors → no silent conversions
+- explicit cast operators → no implicit conversions
+- Round-trip XOR validation → guarantee no silent bit flip
+
 ### Results
+
+- [x] Nucleotide encode/decode — tests green
+- [x] Kmer encode/decode — in progress
+- [ ] KmerExtractor sliding window — todo
+
 ### Open questions
 ### Observation
 

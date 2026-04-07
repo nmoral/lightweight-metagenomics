@@ -1,6 +1,7 @@
 CXX      = g++
-CXXFLAGS = -Wall -Wextra -std=c++17 -Isrc
+CXXFLAGS = -Wall -Wextra -std=c++17 -Isrc -Itests
 CATCH    = -lCatch2Main -lCatch2
+COVERAGE = --coverage -fprofile-abs-path
 
 # Sources communes (sans aucun main)
 COMMON_SRCS = $(filter-out src/mains/%, $(wildcard src/**/*.cpp))
@@ -64,3 +65,18 @@ run_benchmark: benchmark
 
 run_tests: tests
 	./output/tests/runner
+
+coverage: CXXFLAGS += $(COVERAGE)
+coverage: clean tests
+	./output/tests/runner
+	lcov --capture --directory output --output-file output/coverage.info
+	lcov --remove output/coverage.info '/usr/*' --output-file output/coverage.info
+	genhtml output/coverage.info --output-directory output/coverage_html
+	@echo "Coverage report: output/coverage_html/index.html"
+	xdg-open output/coverage_html/index.html
+
+clean_coverage:
+	find output -name "*.gcda" -delete
+	find output -name "*.gcno" -delete
+	rm -f output/coverage.info
+	rm -rf output/coverage_html

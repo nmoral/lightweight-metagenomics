@@ -1,5 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include "encoding/Nucleotide.h"
+#include "encoding/exception/exceptions.cpp"
+#include "helpers.cpp"
 
 TEST_CASE("Nucleotide encoding", "[nucleotide][encoding]") {
     SECTION("Encoding Nucleotides") {
@@ -9,8 +11,15 @@ TEST_CASE("Nucleotide encoding", "[nucleotide][encoding]") {
 
         n = Nucleotide(0);
         REQUIRE(n == 'A');
+        REQUIRE(std::string(n) == "A");
 
         REQUIRE((u_int8_t)n == 0b00);
+
+        REQUIRE_THROWS_AS(Nucleotide('x'), EncodingException);
+
+        REQUIRE_THROWS_AS(Nucleotide(5), EncodingException);
+
+        REQUIRE_THROWS_AS(n.encode('S'), EncodingException);
     }
 
     SECTION("Round-trip char → int → char") {
