@@ -80,3 +80,8 @@ Three possible explanations:
 - the skip itself provides no performance gain
 - the gain is masked by the cost of throwing exceptions
 - the gain is masked by the cost of substr allocation
+
+## 08/04/2026
+
+### Observation :
+Exceptions carry a significant performance cost compared to error codes. A system allowing clean skip testing without exceptions needs to be designed. The first attempt failed, using negative values on unsigned integers is not possible.
