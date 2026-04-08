@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <optional>
 #include "Kmer.h"
 #include "extraction/KmerExtractor.h"
 
@@ -10,7 +11,7 @@ class Read {
 
 
         Kmer window(const int at, const int size) const;
-        Kmer next();
+        std::optional<Kmer> next();
         bool done() const;
 
     private: 

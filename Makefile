@@ -2,12 +2,19 @@ EXTRACTION_MODE ?= 1
 
 
 CXX      = g++
-CXXFLAGS = -Wall -Wextra -std=c++17 -Isrc -Itests
+CXXFLAGS = -Wall -Wextra -std=c++17 -Isrc -Itests \
            -DKMER_SIZE=$(KMER_SIZE) \
            -DEXTRACTION_MODE=$(EXTRACTION_MODE) 
 
 CATCH    = -lCatch2Main -lCatch2
 COVERAGE = --coverage -fprofile-abs-path
+
+BENCHMARK_FLAGS = -L/usr/lib/x86_64-linux-gnu -lbenchmark -lbenchmark_main -lpthread
+
+BENCHMARK_RESULT_DIR ?= $(shell date +%Y-%m-%d_%H-%M)
+
+
+BENCHMARK_OUTPUT = benchmarks/results/$(BENCHMARK_RESULT_DIR)/mode$(EXTRACTION_MODE)_type$(EXTRACTION_TYPE)_k$(KMER_SIZE)
 
 
 # Sources communes (sans aucun main)
@@ -24,7 +31,7 @@ OUTDIRS = $(sort $(dir $(COMMON_OBJS))) \
           $(sort $(dir $(TEST_OBJS)))
 
 
-.PHONY: all clean index bits benchmark tests run_tests
+.PHONY: all clean index bits benchmark tests run_tests report report_open
 
 all: index bits benchmark
 
@@ -37,7 +44,7 @@ bits: .create_dirs $(COMMON_OBJS) output/mains/main_bits.o
 	$(CXX) $(CXXFLAGS) $(COMMON_OBJS) output/mains/main_bits.o -o output/bits
 
 benchmark: .create_dirs $(COMMON_OBJS) output/mains/main_benchmark.o
-	$(CXX) $(CXXFLAGS) $(COMMON_OBJS) output/mains/main_benchmark.o -o output/benchmark
+	$(CXX) $(CXXFLAGS) $(COMMON_OBJS) output/mains/main_benchmark.o $(BENCHMARK_FLAGS) -o output/benchmark
 
 # --- Tests ---
 
@@ -68,8 +75,14 @@ run_index: index
 run_bits: bits
 	./output/bits
 
+run_benchmark: CXXFLAGS += -O2 -DNDEBUG
 run_benchmark: benchmark
-	./output/benchmark
+	mkdir -p benchmarks/results/$(BENCHMARK_RESULT_DIR)
+	./output/benchmark \
+	    --benchmark_format=json \
+	    --benchmark_out=$(BENCHMARK_OUTPUT).json
+	./output/benchmark \
+	    --benchmark_format=console
 
 run_tests:
 	./output/tests/runner
@@ -99,3 +112,9 @@ clean_coverage:
 	find output -name "*.gcno" -delete
 	rm -f output/coverage.info
 	rm -rf output/coverage_html
+
+report:
+	python3 benchmarks/scripts/benchmark_report.py benchmarks/results/$(BENCHMARK_RESULT_DIR)
+
+report_open: report
+	xdg-open benchmarks/results/$(BENCHMARK_RESULT_DIR)/report.html

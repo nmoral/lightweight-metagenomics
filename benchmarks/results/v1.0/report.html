@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Benchmark report — v1.0</title>
+    <style>
+        body {
+            font-family: monospace;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background: #1e1e2e;
+            color: #cdd6f4;
+        }
+        h1, h2 { color: #89b4fa; }
+        .table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        .table th, .table td {
+            border: 1px solid #313244;
+            padding: 8px 16px;
+            text-align: right;
+        }
+        .table th {
+            background: #313244;
+            color: #89b4fa;
+        }
+        .table tr:nth-child(even) { background: #181825; }
+        img { max-width: 100%; margin: 20px 0; border: 1px solid #313244; }
+        .meta {
+            background: #181825;
+            padding: 16px;
+            border-left: 4px solid #89b4fa;
+            margin: 20px 0;
+        }
+        .files { color: #a6e3a1; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <h1>Benchmark report</h1>
+
+    <div class="meta">
+        <strong>Date :</strong> v1.0<br>
+        <strong>Files :</strong>
+        <span class="files">mode0_type0_k31.json, mode0_type1_k31.json, mode1_type0_k31.json, mode1_type1_k31.json</span>
+    </div>
+
+    <h2>Results (mean time in ns)</h2>
+    <table class="dataframe table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>config</th>
+      <th>mode0_type0_k31</th>
+      <th>mode0_type1_k31</th>
+      <th>mode1_type0_k31</th>
+      <th>mode1_type1_k31</th>
+    </tr>
+    <tr>
+      <th>benchmark</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>BM_Nanopore_Read</th>
+      <td>245712</td>
+      <td>247040</td>
+      <td>6273923</td>
+      <td>6251143</td>
+    </tr>
+    <tr>
+      <th>BM_Perfect_Read</th>
+      <td>249235</td>
+      <td>246638</td>
+      <td>234634</td>
+      <td>231103</td>
+    </tr>
+  </tbody>
+</table>
+
+    <h2>Comparison chart</h2>
+    <img src="comparison.png" alt="Benchmark comparison chart">
+
+    <h2>Raw data</h2>
+    <table class="dataframe table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>benchmark</th>
+      <th>config</th>
+      <th>mean_time_ns</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>BM_Nanopore_Read</td>
+      <td>mode0_type0_k31</td>
+      <td>245712</td>
+    </tr>
+    <tr>
+      <td>BM_Nanopore_Read</td>
+      <td>mode0_type1_k31</td>
+      <td>247040</td>
+    </tr>
+    <tr>
+      <td>BM_Nanopore_Read</td>
+      <td>mode1_type0_k31</td>
+      <td>6273923</td>
+    </tr>
+    <tr>
+      <td>BM_Nanopore_Read</td>
+      <td>mode1_type1_k31</td>
+      <td>6251143</td>
+    </tr>
+    <tr>
+      <td>BM_Perfect_Read</td>
+      <td>mode0_type0_k31</td>
+      <td>249235</td>
+    </tr>
+    <tr>
+      <td>BM_Perfect_Read</td>
+      <td>mode0_type1_k31</td>
+      <td>246638</td>
+    </tr>
+    <tr>
+      <td>BM_Perfect_Read</td>
+      <td>mode1_type0_k31</td>
+      <td>234634</td>
+    </tr>
+    <tr>
+      <td>BM_Perfect_Read</td>
+      <td>mode1_type1_k31</td>
+      <td>231103</td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>

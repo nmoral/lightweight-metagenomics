@@ -1,4 +1,6 @@
 output
+benchmarks/results/*
+!benchmarks/results/v*
 
 .vscode
 .idea

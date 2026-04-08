@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <optional>
 #include "Read.h"
 #include "extraction/KmerExtractor.h"
 #include "exception/exceptions.h"
@@ -11,13 +12,10 @@ Read::Read(const std::string& read, KmerExtractor& extractor): read_(read), extr
 }
 
 
-Kmer Read::next() 
+std::optional<Kmer> Read::next() 
 {   
     Kmer k;
 
-    if ((index_ + KMER_SIZE - 1) >= size()) {
-        throw OutofBoundsException("Out of bounds exception");
-    }
 
     try {
         k = Kmer(extractor_->extract((*this), index_));
@@ -27,6 +25,11 @@ Kmer Read::next()
         }
 
         index_ = e.index();
+
+        // Le jump dépasse la fin — plus rien à lire
+        if ((index_ + KMER_SIZE - 1) >= size()) {
+            return std::nullopt;  // ou throw selon le design
+        }
         return next();
 
     }

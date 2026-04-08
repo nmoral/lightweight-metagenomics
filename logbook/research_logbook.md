@@ -44,10 +44,10 @@ Extractor, should return a vector of Kmer, it's a boundary between reading and i
 Extractor should take a read as input. This allow to get multiple source of read possible and give more flexibility to extractor. 
 
 Extractor can skip if an error is detected in a READ. skip formula is 
-I = I + K +1 
+I = I + J +1 
 Where : 
 I = current index in read
-K = error index in kmer
+J = error index in kmer
 
 ### Decision
 
@@ -55,14 +55,28 @@ K = error index in kmer
 - explicit constructors → no silent conversions
 - explicit cast operators → no implicit conversions
 - Round-trip XOR validation → guarantee no silent bit flip
+- using classic string
+- throw exception 
 
 ### Results
 
 - [x] Nucleotide encode/decode — tests green
-- [x] Kmer encode/decode — in progress
-- [ ] KmerExtractor sliding window — todo
+- [x] Kmer encode/decode — tests green
+- [x] KmerExtractor sliding window — tests green
+- [x] Benchmark — strict+naive k=31 : 31 635 ns / 781 042 ns (perfect/nanopore)
 
 ### Open questions
+
+- What happens when string_view is used instead of string?
+- What happens when an error code is used instead of an exception?
+
 ### Observation
 
 Object implementation is not a ram problem in bioinformatics. But manipulating a list of object is less compact than an u_int64_t. So When we're implementing K-mer, we need to represent K-mer as an u_int64 and transform bit at position N and N+1 into Nucleotide object. 
+
+The Boyer-Moore inspired skip heuristic does not appear effective in a context combining exceptions and substring allocation.
+Three possible explanations:
+
+- the skip itself provides no performance gain
+- the gain is masked by the cost of throwing exceptions
+- the gain is masked by the cost of substr allocation
