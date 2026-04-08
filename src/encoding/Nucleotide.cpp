@@ -1,7 +1,7 @@
 
-#include "Nucleotide.h"
 #include <iostream>
-#include "exception/exceptions.cpp"
+#include "Nucleotide.h"
+#include "exception/exceptions.h"
 
 
 Nucleotide::Nucleotide(const char nucleotide): n_(validate(nucleotide)) {}
@@ -64,6 +64,6 @@ char Nucleotide::validate(char nucleotide) {
     switch (nucleotide)
     {
         case 'A': case 'T': case 'C': case 'G': return nucleotide;
-        default: throw EncodingException("Invalid nucleotide expected A, T, C, G got "+std::string(1, nucleotide) + " instead");
+        default: throw NucleotideException("Invalid nucleotide expected A, T, C, G got "+std::string(1, nucleotide) + " instead", nucleotide);
     }
 }

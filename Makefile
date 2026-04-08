@@ -1,7 +1,14 @@
+EXTRACTION_MODE ?= 1
+
+
 CXX      = g++
 CXXFLAGS = -Wall -Wextra -std=c++17 -Isrc -Itests
+           -DKMER_SIZE=$(KMER_SIZE) \
+           -DEXTRACTION_MODE=$(EXTRACTION_MODE) 
+
 CATCH    = -lCatch2Main -lCatch2
 COVERAGE = --coverage -fprofile-abs-path
+
 
 # Sources communes (sans aucun main)
 COMMON_SRCS = $(filter-out src/mains/%, $(wildcard src/**/*.cpp))
@@ -15,6 +22,7 @@ TEST_OBJS = $(patsubst tests/%.cpp, output/tests/%.o, $(TEST_SRCS))
 OUTDIRS = $(sort $(dir $(COMMON_OBJS))) \
           output/mains \
           $(sort $(dir $(TEST_OBJS)))
+
 
 .PHONY: all clean index bits benchmark tests run_tests
 
@@ -33,7 +41,7 @@ benchmark: .create_dirs $(COMMON_OBJS) output/mains/main_benchmark.o
 
 # --- Tests ---
 
-tests: .create_dirs $(COMMON_OBJS) $(TEST_OBJS)
+tests: clean .create_dirs $(COMMON_OBJS) $(TEST_OBJS)
 	$(CXX) $(CXXFLAGS) $(COMMON_OBJS) $(TEST_OBJS) $(CATCH) -o output/tests/runner
 
 # --- Compilation des objets src ---
@@ -63,14 +71,25 @@ run_bits: bits
 run_benchmark: benchmark
 	./output/benchmark
 
-run_tests: tests
+run_tests:
 	./output/tests/runner
+
+tests_debug: CXXFLAGS += -g -O0
+tests_debug: clean tests
+
+tests_strict:
+	$(MAKE) tests EXTRACTION_MODE=0
+
+tests_tolerant:
+	$(MAKE) tests EXTRACTION_MODE=1
+
+tests_all: tests_strict tests_tolerant
 
 coverage: CXXFLAGS += $(COVERAGE)
 coverage: clean tests
 	./output/tests/runner
-	lcov --capture --directory output --output-file output/coverage.info
-	lcov --remove output/coverage.info '/usr/*' --output-file output/coverage.info
+	lcov --capture --directory output --output-file output/coverage.info --ignore-errors mismatch
+	lcov --extract output/coverage.info "$(PWD)/src/*" --output-file output/coverage.info --ignore-errors mismatch
 	genhtml output/coverage.info --output-directory output/coverage_html
 	@echo "Coverage report: output/coverage_html/index.html"
 	xdg-open output/coverage_html/index.html

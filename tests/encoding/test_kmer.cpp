@@ -1,7 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include "encoding/Kmer.h"
 #include "encoding/Nucleotide.h"
-#include "encoding/exception/exceptions.cpp"
+#include "encoding/exception/exceptions.h"
 #include "helpers.cpp"
 
 TEST_CASE("Kmer encoding", "[Kmer][encoding]") {

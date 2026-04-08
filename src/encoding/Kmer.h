@@ -6,8 +6,10 @@
 class Kmer {
     public:
         explicit Kmer(const std::string& kmer);
+        explicit Kmer();
 
         bool operator==(const u_int64_t kmer) const;
+        bool operator==(const std::string& kmer) const;
 
         Nucleotide operator[](const std::size_t index) const;
 

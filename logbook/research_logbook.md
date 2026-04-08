@@ -32,6 +32,23 @@ Given a DNA sequence (string), extract all k-mers of length k
 so each nucleotide must be encoded from char to two bits. Not only because it's a standart but because it's easier to apply mathematical solution on int. 
 We need to verify that no silent bit-level modifications are taking place. 
 
+
+kmer extractor, should allow two options : 
+    - strict
+    - tolerant
+
+Strict will reject the read if at least one kmer is invalid. 
+
+Extractor, should return a vector of Kmer, it's a boundary between reading and indexing. We need a real contract between each module, not an array on int. 
+
+Extractor should take a read as input. This allow to get multiple source of read possible and give more flexibility to extractor. 
+
+Extractor can skip if an error is detected in a READ. skip formula is 
+I = I + K +1 
+Where : 
+I = current index in read
+K = error index in kmer
+
 ### Decision
 
 - Stored as char internally, encoded on demand → minimise storage
