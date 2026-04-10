@@ -15,7 +15,7 @@ BENCHMARK_RESULT_DIR ?= $(shell date +%Y-%m-%d_%H-%M)
 
 
 BENCHMARK_OUTPUT = benchmarks/results/$(BENCHMARK_RESULT_DIR)/mode$(EXTRACTION_MODE)_type$(EXTRACTION_TYPE)_k$(KMER_SIZE)
-
+MEMORY_OUTPUT = benchmarks/results/$(BENCHMARK_RESULT_DIR)/memory_mode$(EXTRACTION_MODE)_type$(EXTRACTION_TYPE)_k$(KMER_SIZE)
 
 # Sources communes (sans aucun main)
 COMMON_SRCS = $(filter-out src/mains/%, $(wildcard src/**/*.cpp))
@@ -45,6 +45,10 @@ bits: .create_dirs $(COMMON_OBJS) output/mains/main_bits.o
 
 benchmark: .create_dirs $(COMMON_OBJS) output/mains/main_benchmark.o
 	$(CXX) $(CXXFLAGS) $(COMMON_OBJS) output/mains/main_benchmark.o $(BENCHMARK_FLAGS) -o output/benchmark
+
+memory: .create_dirs $(COMMON_OBJS) output/mains/main_memory.o
+	$(CXX) $(CXXFLAGS) $(COMMON_OBJS) output/mains/main_memory.o -o output/memory
+
 
 # --- Tests ---
 
@@ -118,3 +122,12 @@ report:
 
 report_open: report
 	xdg-open benchmarks/results/$(BENCHMARK_RESULT_DIR)/report.html
+
+
+run_memory: CXXFLAGS += -O2 -DNDEBUG
+run_memory: memory
+	mkdir -p benchmarks/results/$(BENCHMARK_RESULT_DIR)
+	valgrind --tool=massif --pages-as-heap=yes \
+	    --massif-out-file=$(MEMORY_OUTPUT).massif \
+	    ./output/memory
+	ms_print $(MEMORY_OUTPUT).massif > $(MEMORY_OUTPUT).txt
