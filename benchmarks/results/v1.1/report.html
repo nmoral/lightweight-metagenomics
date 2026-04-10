@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Benchmark report — v1.1</title>
+    <style>
+        body {
+            font-family: monospace;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background: #1e1e2e;
+            color: #cdd6f4;
+        }
+        h1, h2 { color: #89b4fa; }
+        .table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        .table th, .table td {
+            border: 1px solid #313244;
+            padding: 8px 16px;
+            text-align: right;
+        }
+        .table th {
+            background: #313244;
+            color: #89b4fa;
+        }
+        .table tr:nth-child(even) { background: #181825; }
+        img { max-width: 100%; margin: 20px 0; border: 1px solid #313244; }
+        .meta {
+            background: #181825;
+            padding: 16px;
+            border-left: 4px solid #89b4fa;
+            margin: 20px 0;
+        }
+        .files { color: #a6e3a1; font-size: 0.9em; }
+        .section-divider {
+            border: none;
+            border-top: 1px solid #313244;
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Benchmark report</h1>
+
+    <div class="meta">
+        <strong>Date :</strong> v1.1<br>
+        <strong>Time files :</strong> <span class="files">mode0_type0_k31.json, mode0_type1_k31.json, mode1_type0_k31.json, mode1_type1_k31.json</span><br>
+        <strong>Memory files :</strong> <span class="files">memory_mode0_type0_k31.massif, memory_mode0_type1_k31.massif, memory_mode1_type0_k31.massif, memory_mode1_type1_k31.massif</span>
+    </div>
+
+    
+    <h2>Time results (mean in ns)</h2>
+    <table class="dataframe table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>config</th>
+      <th>mode0_type0_k31</th>
+      <th>mode0_type1_k31</th>
+      <th>mode1_type0_k31</th>
+      <th>mode1_type1_k31</th>
+    </tr>
+    <tr>
+      <th>benchmark</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>BM_Nanopore_Read</th>
+      <td>95</td>
+      <td>101</td>
+      <td>108564</td>
+      <td>116574</td>
+    </tr>
+    <tr>
+      <th>BM_Perfect_Read</th>
+      <td>185564</td>
+      <td>189364</td>
+      <td>186364</td>
+      <td>190626</td>
+    </tr>
+  </tbody>
+</table>
+    <h2>Time comparison chart</h2>
+    <img src="comparison_time.png" alt="Time benchmark comparison chart">
+    <h2>Raw time data</h2>
+    <table class="dataframe table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>benchmark</th>
+      <th>config</th>
+      <th>mean_time_ns</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>BM_Nanopore_Read</td>
+      <td>mode0_type0_k31</td>
+      <td>95</td>
+    </tr>
+    <tr>
+      <td>BM_Nanopore_Read</td>
+      <td>mode0_type1_k31</td>
+      <td>101</td>
+    </tr>
+    <tr>
+      <td>BM_Nanopore_Read</td>
+      <td>mode1_type0_k31</td>
+      <td>108564</td>
+    </tr>
+    <tr>
+      <td>BM_Nanopore_Read</td>
+      <td>mode1_type1_k31</td>
+      <td>116574</td>
+    </tr>
+    <tr>
+      <td>BM_Perfect_Read</td>
+      <td>mode0_type0_k31</td>
+      <td>185564</td>
+    </tr>
+    <tr>
+      <td>BM_Perfect_Read</td>
+      <td>mode0_type1_k31</td>
+      <td>189364</td>
+    </tr>
+    <tr>
+      <td>BM_Perfect_Read</td>
+      <td>mode1_type0_k31</td>
+      <td>186364</td>
+    </tr>
+    <tr>
+      <td>BM_Perfect_Read</td>
+      <td>mode1_type1_k31</td>
+      <td>190626</td>
+    </tr>
+  </tbody>
+</table>
+    
+
+    <hr class="section-divider">
+
+    
+    <h2>Memory results (peak RSS)</h2>
+    
+    <table class="table">
+        <thead><tr><th>Configuration</th><th>Peak memory</th></tr></thead>
+        <tbody><tr><td>memory_mode0_type0_k31</td><td>10.92 MB</td></tr><tr><td>memory_mode0_type1_k31</td><td>10.92 MB</td></tr><tr><td>memory_mode1_type0_k31</td><td>10.92 MB</td></tr><tr><td>memory_mode1_type1_k31</td><td>10.92 MB</td></tr></tbody>
+    </table>
+    
+    <h2>Peak memory chart</h2>
+    <img src="comparison_memory_peak.png" alt="Memory peak chart">
+    <h2>Memory usage over time</h2>
+    <img src="comparison_memory_curve.png" alt="Memory curve chart">
+    
+</body>
+</html>

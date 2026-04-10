@@ -85,3 +85,15 @@ Three possible explanations:
 
 ### Observation :
 Exceptions carry a significant performance cost compared to error codes. A system allowing clean skip testing without exceptions needs to be designed. The first attempt failed, using negative values on unsigned integers is not possible.
+
+
+## 09/04/2026 : 
+
+### Observation : 
+Following previous tests, the first attempt at an exception-free implementation failed — using negative values as sentinels is not possible on unsigned types (`uint64_t`).
+A new strategy is defined: enriching existing objects with a single `uint8_t` field serving the dual role of error index (`[0, KMER_SIZE-1]`) and success sentinel (`KMER_SIZE`). This value lives only on the stack during transitions between modules and does not impact final storage.
+In parallel, a `uint8_t` bitfield is introduced to encode the object state and enforce status validation before value access. Any violation raises a logic exception. This mechanism guarantees interface safety in an open source context.
+
+### Decision : 
+- A `uint8_t` is used to carry the error index. The value `KMER_SIZE` serves as the validity sentinel for the Kmer.
+- A `uint8_t` bitfield encodes the Kmer state, allowing both state tracking and error cause identification.

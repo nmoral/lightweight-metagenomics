@@ -1,4 +1,5 @@
 
+#include <optional>
 #include "SkipKmerExtractor.h"
 #include "KmerExtractor.h"
 #include "encoding/Read.h"
@@ -7,11 +8,20 @@
 
 
 
-Kmer SkipKmerExtractor::extract(const Read& read, const int at) const
+std::optional<Kmer> SkipKmerExtractor::extract(Read& read, int& at)
 {
-    try {
-        return KmerExtractor::extract(read, at);
-    } catch (const ExtractException& e) {
-        std::throw_with_nested(ExtractException(e.previous(), e.index() + e.previous().index()));
+    auto k =  KmerExtractor::extract(read, at);
+
+    if (k->valid()) {
+        return k;
     }
+
+    at += k->error();
+
+    if (read.done()) {
+        return std::nullopt;
+    }
+
+    return read.next();
 }
+

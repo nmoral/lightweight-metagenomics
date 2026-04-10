@@ -1,10 +1,14 @@
 EXTRACTION_MODE ?= 1
-
+EXTRACTION_TYPE ?= 0
+THROW_EXCEPTION ?= 1
+KMER_SIZE ?=2
 
 CXX      = g++
 CXXFLAGS = -Wall -Wextra -std=c++17 -Isrc -Itests \
            -DKMER_SIZE=$(KMER_SIZE) \
-           -DEXTRACTION_MODE=$(EXTRACTION_MODE) 
+           -DEXTRACTION_MODE=$(EXTRACTION_MODE) \
+           -DEXTRACTION_TYPE=$(EXTRACTION_TYPE) \
+		   -DTHROW_EXCEPTION=$(THROW_EXCEPTION)
 
 CATCH    = -lCatch2Main -lCatch2
 COVERAGE = --coverage -fprofile-abs-path

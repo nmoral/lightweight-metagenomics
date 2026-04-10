@@ -47,13 +47,7 @@ static void BM_Perfect_Read(benchmark::State& state) {
 static void BM_Nanopore_Read(benchmark::State& state) {
     auto extractor = createExtractor();
     for (auto _ : state) {
-        #if EXTRACTION_MODE == 0
-                // Mode strict — pas d'erreurs dans le read
-                Read r(PERFECT_READ, *extractor);
-        #else
-                // Mode tolerant — erreurs acceptées
-                Read r(NANOPORE_READ, *extractor);
-        #endif
+        Read r(NANOPORE_READ, *extractor);
         while (!r.done()) r.next();
     }
 }

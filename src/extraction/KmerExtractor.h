@@ -1,8 +1,7 @@
-#pragma once
 
-#ifndef KMER_SIZE
-    #define KMER_SIZE 2
-#endif
+#pragma once
+#include <optional>
+
 
 
 #ifndef EXTRACTION_MODE
@@ -25,6 +24,7 @@ enum class ExtractionType {
 
 constexpr ExtractionMode CURRENT_MODE = static_cast<ExtractionMode>(EXTRACTION_MODE);
 constexpr ExtractionType CURRENT_TYPE = static_cast<ExtractionType>(EXTRACTION_TYPE);
+
 class Read;
 class Kmer;
 
@@ -33,6 +33,5 @@ class KmerExtractor {
     public: 
         explicit KmerExtractor();
 
-        virtual Kmer extract(const Read& read, const int at) const;
-
+        virtual std::optional<Kmer> extract(Read& read, int& at);
 };

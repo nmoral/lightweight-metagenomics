@@ -1,0 +1,68 @@
+{
+  "context": {
+    "date": "2026-04-10T16:46:30+02:00",
+    "host_name": "nicolas-Default-string",
+    "executable": "./output/benchmark",
+    "num_cpus": 16,
+    "mhz_per_cpu": 4374,
+    "cpu_scaling_enabled": true,
+    "caches": [
+      {
+        "type": "Data",
+        "level": 1,
+        "size": 32768,
+        "num_sharing": 2
+      },
+      {
+        "type": "Instruction",
+        "level": 1,
+        "size": 32768,
+        "num_sharing": 2
+      },
+      {
+        "type": "Unified",
+        "level": 2,
+        "size": 524288,
+        "num_sharing": 2
+      },
+      {
+        "type": "Unified",
+        "level": 3,
+        "size": 4194304,
+        "num_sharing": 8
+      }
+    ],
+    "load_avg": [1.77783,1.62109,1.62891],
+    "library_build_type": "debug"
+  },
+  "benchmarks": [
+    {
+      "name": "BM_Perfect_Read",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_Perfect_Read",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 3513,
+      "real_time": 1.9062641929965100e+05,
+      "cpu_time": 1.9062729063478508e+05,
+      "time_unit": "ns"
+    },
+    {
+      "name": "BM_Nanopore_Read",
+      "family_index": 1,
+      "per_family_instance_index": 0,
+      "run_name": "BM_Nanopore_Read",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 5959,
+      "real_time": 1.1657433445201602e+05,
+      "cpu_time": 1.1656781674777649e+05,
+      "time_unit": "ns"
+    }
+  ]
+}

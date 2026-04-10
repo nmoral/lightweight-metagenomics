@@ -3,62 +3,56 @@
 #include "Nucleotide.h"
 #include "exception/exceptions.h"
 
+
 Kmer::Kmer(const std::string& kmer) {
-    if (kmer.size() > 31 || kmer.size() == 0) {
-        throw LengthException("kmer size must be between 1 and 31 char, got "+ std::to_string(kmer.size()) + " instead");
-    }
-    kmer_ = encode(kmer);
-    length_ = kmer.size();
-}
-
-Kmer::Kmer() {
-    length_ = 0;
-}
-
-
-u_int64_t Kmer::encode(const std::string& kmer) const {
-    u_int64_t value = 0;
-    int index = 0;
-
-    for (const char c: kmer) {
-
-        try {
-            value = value << 2 | (u_int8_t) Nucleotide(c);
-        } catch (const NucleotideException& e) {
-            std::throw_with_nested(KmerException(e.what(), e.value(),index));
+    u_int8_t index = 0;
+    kmer_ = 0;
+    bool valid = true;
+    for (char c: kmer) {
+        Nucleotide n(c);
+        if (!n.valid()) {
+            valid = false;
+            break;
         }
         ++index;
+
+        kmer_ = kmer_ << 2 | n.value();
     }
-
-    return value;
-}
-
-
-Kmer::operator std::string() const {
-    std::string result;
-    for (int i = 0; i < length_; ++i) {
-        result += (char)(*this)[i];
+    if (!valid) {
+        error_index_ = index;
+    } else {
+        error_index_ = KMER_SIZE;
     }
-
-    return result;
-} // LCOV_EXCL_LINE
-
-
-Nucleotide Kmer::operator[](const std::size_t index) const {
-    return Nucleotide((int) ((kmer_ >> (length_ - 1 - index) * 2) & 0b11));
-}
-
-bool Kmer::operator==(const u_int64_t kmer) const {
-    return kmer_ == kmer;
 }
 
 
-bool Kmer::operator==(const std::string& kmer) const {
-    return kmer_ == encode(kmer);
+bool Kmer::valid() {
+    state_ = 1;
+
+    return KMER_SIZE == error_index_;
 }
 
-int Kmer::size() const {
-    return length_;
+u_int64_t Kmer::value() const {
+    check_state();
+
+    return kmer_;
 }
 
 
+u_int8_t Kmer::error() const {
+    check_state();
+
+    return error_index_;
+}
+
+bool Kmer::operator==(const Kmer& kmer) const
+{
+    return kmer_ == kmer.value();
+}
+
+void Kmer::check_state() const 
+{
+    if (state_ == 0) {
+        throw ValidateException("You must validate object before reading value");
+    }
+}

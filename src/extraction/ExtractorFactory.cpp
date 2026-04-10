@@ -1,5 +1,7 @@
+
 #include "ExtractorFactory.h"
 #include "KmerExtractor.h"
+#include "SkipKmerExtractor.h"
 
 
 std::unique_ptr<KmerExtractor> createExtractor() {
