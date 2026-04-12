@@ -50,4 +50,21 @@ TEMPLATE_TEST_CASE("Extraction valid read", "[extractor]",
         r.next();
         REQUIRE(r.done());
     }
+
+    SECTION("ENCODING INCORRECT READ") {
+        auto extractor = std::make_unique<TestType>();
+        Read r("ATXGC", *extractor);
+
+        REQUIRE(r.size() == 4);
+
+        Kmer k("AT");
+        auto k1 = r.next();
+        REQUIRE_THROWS_AS(k1 == k, ValidateException);
+        REQUIRE(k.valid());
+        REQUIRE(k1->valid());
+        REQUIRE(k1 == k);
+        r.next();
+        r.next();
+        REQUIRE(r.done());
+    }
 }

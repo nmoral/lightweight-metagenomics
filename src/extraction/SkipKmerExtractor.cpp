@@ -10,13 +10,20 @@
 
 std::optional<Kmer> SkipKmerExtractor::extract(Read& read, int& at)
 {
-    auto k =  KmerExtractor::extract(read, at);
+    auto k = read.window(at, KMER_SIZE);
+    ++at;
 
-    if (k->valid()) {
+    if (k.valid()) {
         return k;
     }
 
-    at += k->error();
+    if (CURRENT_MODE == ExtractionMode::STRICT) {
+        at = read.size();
+         
+        return std::nullopt;
+    }
+
+    at += k.error();
 
     if (read.done()) {
         return std::nullopt;
