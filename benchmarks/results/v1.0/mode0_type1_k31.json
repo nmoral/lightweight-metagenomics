@@ -1,6 +1,6 @@
 {
   "context": {
-    "date": "2026-04-10T16:38:44+02:00",
+    "date": "2026-04-12T16:51:30+02:00",
     "host_name": "nicolas-Default-string",
     "executable": "./output/benchmark",
     "num_cpus": 16,
@@ -32,7 +32,7 @@
         "num_sharing": 8
       }
     ],
-    "load_avg": [3.00732,2.22949,1.76221],
+    "load_avg": [1.98193,1.54004,0.834961],
     "library_build_type": "debug"
   },
   "benchmarks": [
@@ -45,9 +45,9 @@
       "repetitions": 1,
       "repetition_index": 0,
       "threads": 1,
-      "iterations": 2789,
-      "real_time": 2.4671758838304938e+05,
-      "cpu_time": 2.4670536392972391e+05,
+      "iterations": 2958,
+      "real_time": 2.2661107572685654e+05,
+      "cpu_time": 2.2657112981744425e+05,
       "time_unit": "ns"
     },
     {
@@ -59,9 +59,9 @@
       "repetitions": 1,
       "repetition_index": 0,
       "threads": 1,
-      "iterations": 2847,
-      "real_time": 2.4834485493496017e+05,
-      "cpu_time": 2.4834139901650860e+05,
+      "iterations": 3074,
+      "real_time": 2.2558098145738576e+05,
+      "cpu_time": 2.2557198308392981e+05,
       "time_unit": "ns"
     }
   ]
