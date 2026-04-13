@@ -44,9 +44,81 @@ A tested function: `extract_kmers(sequence, k) → list of uint64_t`
 Round-trip test passes on at least 10 sequences of varying length.
 Edge cases tested: k = sequence length, k = 1, sequences with all 4 nucleotides.
 
+**Status** : done. ✓
+
 ---
 
-## Step 2 — Naive k-mer index (level 3 baseline)
+## Step 1.5 — Benchmark: exception-based vs error-code extraction
+### Validate the architectural choice before building on it
+
+**What**  
+Compare the two implementations of KmerExtractor — exception-based (v1.0)
+and error-code-based — on strict and tolerant modes.
+Measure: extraction time on clean reads, on reads with invalid characters,
+and memory footprint in both configurations.
+
+**Why now**  
+Step 2 builds a preprocessor that transforms reads before extraction.
+The extraction strategy must be settled before adding a new layer above it.
+
+**Validates**  
+- Is the zero-cost exception model confirmed on the error-free path?
+- Does exception overhead justify the Boyer-Moore skip hypothesis?
+- Which implementation to carry forward into all subsequent steps?
+
+**Output**  
+Benchmark report (HTML) with time and memory sections.
+A documented architectural decision in the logbook.
+
+**Before moving on**  
+One implementation chosen and justified by measurements.
+The skip heuristic hypothesis confirmed or invalidated empirically.
+
+**Status** : in progress.
+
+---
+
+## Step 2 — HPC preprocessor
+### Normalize reads before extraction
+
+**What**  
+Implement a preprocessor layer between raw reads and k-mer extraction.
+Homopolymer Compression (HPC): collapse consecutive identical nucleotides to one.
+
+```
+Input  : AAATTTCCCGGG
+Output : ATCG
+```
+
+The preprocessor has a clear contract:
+- Input  : raw read (string)
+- Output : transformed read (string) + modification report
+- Modes  : HPC enabled / disabled (compile-time or runtime flag)
+
+Apply the same HPC to reference genomes at index build time.
+Both sides — reads and reference — must speak the same compressed language.
+
+**Why now**  
+Nanopore errors are predominantly insertions/deletions in homopolymer regions.
+HPC eliminates this class of errors before extraction — it is more fundamental
+than the index itself. A naive index built without HPC will measure the wrong thing.
+
+**Validates**  
+- Does HPC reduce k-mer mismatch rate on Nanopore-simulated reads?
+- Are k-mers extracted from HPC reads consistent with HPC reference k-mers?
+- What is the computational cost of the preprocessing step?
+
+**Output**  
+A tested preprocessor class with enable/disable mode.
+A benchmark: k-mer match rate on simulated Nanopore reads, with and without HPC.
+
+**Before moving on**  
+HPC demonstrably reduces k-mer mismatch rate on reads with homopolymer errors.
+Preprocessor is extensible: adding a future HPC2 requires no changes to the extractor.
+
+---
+
+## Step 3 — Naive k-mer index (level 3 baseline)
 ### The simplest possible index — the baseline to beat
 
 **What**  
@@ -74,7 +146,7 @@ Memory and query time measured and recorded.
 
 ---
 
-## Step 3 — Robustness to mutations
+## Step 4 — Robustness to mutations
 ### Understanding where exact matching breaks
 
 **What**  
@@ -101,18 +173,18 @@ an acceptable level (target: understand the failure mode, not fix it yet).
 
 ---
 
-## Step 4 — Weighted evolutionary distance
+## Step 5 — Weighted evolutionary distance
 ### First improvement: smarter similarity measurement
 
 **What**  
 Instead of exact match (0 or 1), compute a weighted distance between
 a query k-mer and the closest indexed k-mer using XOR + substitution weights.
 Start with the Kimura table (transitions = 0.5, transversions = 1.0).
-Compare classification precision vs step 2 on the same mutation datasets.
+Compare classification precision vs step 3 on the same mutation datasets.
 
 **Why now**  
 This is the simplest improvement to exact matching that has biological grounding.
-It requires only the k-mer extractor (step 1) and the naive index (step 2).
+It requires only the k-mer extractor (step 1) and the naive index (step 3).
 If this does not improve precision on mutated reads, it is not worth building on.
 
 **Validates**  
@@ -132,7 +204,7 @@ for a read of 1000 bases to be processed in under 1 second on a basic laptop.
 
 ---
 
-## Step 5 — Probabilistic voting
+## Step 6 — Probabilistic voting
 ### Honest answers with confidence scores
 
 **What**  
@@ -141,7 +213,7 @@ vector over all families. Each k-mer match contributes a weighted vote.
 Unknown organisms produce a diffuse distribution rather than a forced assignment.
 
 **Why now**  
-Steps 2-4 classify but do not express uncertainty.
+Steps 3-5 classify but do not express uncertainty.
 A tool for field use must say "I don't know" when it doesn't know.
 This step is the foundation of the honest response principle.
 
@@ -162,7 +234,7 @@ not false high-confidence assignments.
 
 ---
 
-## Step 6 — Functional motif layer (level 2 prototype)
+## Step 7 — Functional motif layer (level 2 prototype)
 ### Classification without exact reference
 
 **What**  
@@ -172,7 +244,7 @@ Test whether these motifs alone can correctly assign reads to family-level taxon
 even for organisms not in the level 3 index.
 
 **Why now**  
-Steps 2-5 all rely on having the organism in the reference database.
+Steps 3-6 all rely on having the organism in the reference database.
 This step is the first test of T2's core claim: classification beyond the database.
 It requires understanding of biology (which motifs to use) before implementation.
 
@@ -192,11 +264,11 @@ on reads from organisms not in the level 3 index.
 
 ---
 
-## Step 7 — Two-level architecture
+## Step 8 — Two-level architecture
 ### Levels 1+2 guiding level 3
 
 **What**  
-Connect the functional motif layer (step 6) with the k-mer index (step 2).
+Connect the functional motif layer (step 7) with the k-mer index (step 3).
 Phase 1: classify all reads to family using levels 1+2, collect offsets.
 Phase 2: for each family bucket, load only that family's k-mer index and classify.
 Measure total memory usage compared to loading the full index.
@@ -221,17 +293,17 @@ Measurable memory reduction demonstrated.
 
 ---
 
-## Step 8 — Functional motif skip heuristic
+## Step 9 — Functional motif skip heuristic
 ### Fewer k-mers evaluated, same result
 
 **What**  
 When a k-mer contains a known functional motif and no match is found,
 skip len(motif) positions instead of sliding one position.
-Measure: how many k-mers are evaluated vs step 7?
-Measure: what precision is lost vs step 7?
+Measure: how many k-mers are evaluated vs step 8?
+Measure: what precision is lost vs step 8?
 
 **Why now**  
-Steps 1-7 have validated the classification pipeline.
+Steps 1-8 have validated the classification pipeline.
 The skip is a pure optimisation — it should not change results significantly.
 Testing it now, on a validated pipeline, means any regression is clearly visible.
 
@@ -251,7 +323,7 @@ If this threshold is not met — document why and reconsider the skip design.
 
 ---
 
-## Step 9 — Bucket scheduling optimisation
+## Step 10 — Bucket scheduling optimisation
 ### Memory peak minimisation
 
 **What**  
@@ -261,7 +333,7 @@ with maximum overlap with the current bucket next.
 Measure peak memory vs random bucket ordering.
 
 **Why now**  
-Steps 1-8 validate the algorithmic core.
+Steps 1-9 validate the algorithmic core.
 This step optimises memory management — only relevant once the pipeline works.
 Premature optimisation would have obscured bugs in the core logic.
 
@@ -280,7 +352,7 @@ Even a 20-30% reduction justifies the added complexity.
 
 ---
 
-## Step 10 — End-to-end benchmark vs Kraken2
+## Step 11 — End-to-end benchmark vs Kraken2
 ### The moment of truth
 
 **What**  
@@ -311,25 +383,29 @@ A concrete answer to: "does the prototype work?"
 ## Summary — logical dependency graph
 
 ```
-Step 1 — K-mer extraction
-    ↓
-Step 2 — Naive index (baseline)
-    ↓
-Step 3 — Robustness to mutations (understand the problem)
-    ↓
-Step 4 — Weighted distance (improve similarity)
-    ↓
-Step 5 — Probabilistic voting (honest answers)
-    ↓
-Step 6 — Functional motif layer (beyond the database)
-    ↓
-Step 7 — Two-level architecture (lazy loading)
-    ↓
-Step 8 — Skip heuristic (fewer evaluations)
-    ↓
-Step 9 — Bucket scheduling (memory optimisation)
-    ↓
-Step 10 — End-to-end benchmark vs Kraken2
+Step 1   — K-mer extraction
+    |
+Step 1.5 — Benchmark: exceptions vs error codes
+    |
+Step 2   — HPC preprocessor (normalize before extraction)
+    |
+Step 3   — Naive index (baseline to beat)
+    |
+Step 4   — Robustness to mutations (understand the problem)
+    |
+Step 5   — Weighted distance (improve similarity)
+    |
+Step 6   — Probabilistic voting (honest answers)
+    |
+Step 7   — Functional motif layer (beyond the database)
+    |
+Step 8   — Two-level architecture (lazy loading)
+    |
+Step 9   — Skip heuristic (fewer evaluations)
+    |
+Step 10  — Bucket scheduling (memory optimisation)
+    |
+Step 11  — End-to-end benchmark vs Kraken2
 ```
 
 Each arrow means: "the next step depends on the previous one being validated."
@@ -346,7 +422,7 @@ Document it.
 **Measure everything** — precision, recall, memory, time.
 An idea without a measurement is an opinion.
 
-**The baseline is sacred** — step 2 is always the reference.
+**The baseline is sacred** — step 3 is always the reference.
 Every subsequent step must be compared against it.
 
 **Failures are results** — if the skip heuristic does not work,
